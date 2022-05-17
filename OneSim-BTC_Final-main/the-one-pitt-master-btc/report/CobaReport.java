@@ -58,8 +58,6 @@ public class CobaReport extends Report {
         for (Map.Entry<DTNHost, Double> entrySus : QLearn.suspension.entrySet()) {
             write(entrySus.getKey() + "," + entrySus.getValue());
         }
-
         super.done();
     }
-
 }

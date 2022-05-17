@@ -29,7 +29,7 @@ FUZZIFY directTrust			// Fuzzify input variable 'service': {'poor', 'good' , 'ex
 END_FUZZIFY
 
 FUZZIFY indirectTrust			// Fuzzify input variable 'food': { 'rancid', 'delicious' }
-	TERM low := trape -1 -1 -0.5 0 ; 
+	TERM low := trape -1 -1 -0.5 -0 ; 
 	TERM medium := trape -0.5 -0.25 0.25 0.5;
 	TERM high := trape 0 0.5 1 1 ;
 END_FUZZIFY
@@ -41,9 +41,11 @@ FUZZIFY suspension			// Fuzzify input variable 'food': { 'rancid', 'delicious' }
 END_FUZZIFY
 
 DEFUZZIFY trust			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	TERM low := trape -1 -1 -0.5 0 ; 
-	TERM medium := trape -0.5 -0.25 0.25 0.5;
-	TERM high := trape 0 0.5 1 1 ;
+	TERM verylow := trape -1 -1 -0.5 -0.3 ; 
+        TERM low := trian -0.35 -0.1 0.1 ; 
+	TERM medium := trian 0.0 0.2 0.4;
+	TERM high := trian 0.3 0.5 0.7; 
+        TERM veryhigh := trape 0.5 0.7 1 1;
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -59,27 +61,27 @@ RULEBLOCK No1
 	RULE 4 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS low THEN trust IS low;
 	RULE 5 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS low THEN trust IS low;
 	RULE 6 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS low THEN trust IS medium;
-	RULE 7 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS low THEN trust IS low;
-	RULE 8 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS low THEN trust IS low;
-	RULE 9 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS low THEN trust IS low;
+	RULE 7 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
+	RULE 8 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
+	RULE 9 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
 	RULE 10 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS medium THEN trust IS low;
 	RULE 11 : IF directTrust IS medium AND suspension IS low AND  indirectTrust IS medium THEN trust IS low;
 	RULE 12 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS medium THEN trust IS high;
 	RULE 13 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS medium THEN trust IS low;
 	RULE 14 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS medium THEN trust IS low;
 	RULE 15 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS medium THEN trust IS high;
-	RULE 16 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS medium THEN trust IS low;
-	RULE 17 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS medium THEN trust IS low;
-	RULE 18 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS medium THEN trust IS low;
+	RULE 16 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
+	RULE 17 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
+	RULE 18 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
 	RULE 19 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS high THEN trust IS low;
 	RULE 20 : IF directTrust IS medium AND suspension IS low AND  indirectTrust IS high THEN trust IS medium;
-	RULE 21 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS high THEN trust IS high;
+	RULE 21 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS high THEN trust IS veryhigh;
 	RULE 22 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS high THEN trust IS low;
 	RULE 23 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS high THEN trust IS low;
 	RULE 24 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS high THEN trust IS high;
-	RULE 25 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS high THEN trust IS low;
-	RULE 26 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS high THEN trust IS low;
-	RULE 27 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS high THEN trust IS low;
+	RULE 25 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
+	RULE 26 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
+	RULE 27 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
 
 END_RULEBLOCK
 

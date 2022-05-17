@@ -18,6 +18,7 @@ import movement.MovementModel;
 import movement.map.SimMap;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import rLearn.QLearn;
 import routing.MessageRouter;
 
@@ -327,7 +328,8 @@ public class SimScenario implements Serializable {
             System.err.println("Can't load file: '" + filename + "'");
             System.exit(1);
         }
-        this.fb= fis.getFunctionBlock(null);
+        this.fb= fis.getFunctionBlock("tipper");
+//        JFuzzyChart.get().chart(fb);
     }
 
     /**
