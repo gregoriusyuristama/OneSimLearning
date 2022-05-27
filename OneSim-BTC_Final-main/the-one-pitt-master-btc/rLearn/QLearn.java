@@ -87,7 +87,7 @@ public class QLearn {
         if (QLearn.suspension.containsKey(host)) {
             if (QLearn.suspension.get(host) - SimScenario.getInstance().getUpdateInterval() > 0.0) {
                 QLearn.suspended.add(host);
-                QLearn.suspension.put(host, QLearn.suspension.get(host) - SimScenario.getInstance().getUpdateInterval());
+                QLearn.suspension.replace(host, QLearn.suspension.get(host) - SimScenario.getInstance().getUpdateInterval());
             } else if (QLearn.suspension.get(host) - SimScenario.getInstance().getUpdateInterval() <= 0.0) {
                 QLearn.suspension.put(host, 0.0);
                 QLearn.suspended.remove(host);

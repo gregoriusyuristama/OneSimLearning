@@ -36,7 +36,7 @@ public class DTNHost implements Comparable<DTNHost> {
     private ModuleCommunicationBus comBus;
 
     private Wallet wallet;
-    
+
     private double negativeFactor;
 
     public double getNegativeFactor() {
@@ -55,6 +55,12 @@ public class DTNHost implements Comparable<DTNHost> {
         this.coopFactor = coopFactor;
     }
     private double coopFactor;
+
+    private Map<DTNHost, String> verificatorChecked = new HashMap<DTNHost, String>();
+
+    public Map<DTNHost, String> getVerificatorChecked() {
+        return verificatorChecked;
+    }
 
     static {
         DTNSim.registerForReset(DTNHost.class.getCanonicalName());

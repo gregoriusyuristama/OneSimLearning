@@ -36,7 +36,7 @@ public class Incentive {
     private static Map<Message, Map<DTNHost, Set<String>>> verificating = new HashMap<Message, Map<DTNHost, Set<String>>>();
     private static Map<DTNHost, Set<byte[]>> trustToken = new HashMap<DTNHost, Set<byte[]>>();
     private static Map<Message, Set<String>> pending = new HashMap<Message, Set<String>>();
-    
+
     public static Map<DTNHost, Double> detectionTime = new HashMap<DTNHost, Double>();
 
     private static Map<DTNHost, List<DTNHost>> detectedAccomplice = new HashMap<DTNHost, List<DTNHost>>();
@@ -108,7 +108,7 @@ public class Incentive {
                 trusttoken = do_RSADecryption(message, publicKeys.get(host));
             } catch (Exception ex) {
                 System.out.println(ex);
-                        QLearn.updateQ(sender, verificator, false);
+                QLearn.updateQ(sender, verificator, false);
             }
             for (Map.Entry<Message, List<DTNHost>> entry : ack.entrySet()) {
                 Message m = entry.getKey();
@@ -128,17 +128,25 @@ public class Incentive {
                             tup = new HashMap<DTNHost, Set<String>>();
                             verificators = new HashSet<String>();
                         }
+
+                        if (verificator.getVerificatorChecked().containsKey(sender)) {
+                            if (verificator.getVerificatorChecked().get(sender).equals(trusttoken)) {
+                                System.out.println("skipped");
+                                return;
+                            }
+                        }
                         String okay = "+" + verificator;
                         String fail = "-" + verificator;
 
                         if (!(verificators.contains(okay) || verificators.contains(fail))) {
                             if (sender != host) {
-                        QLearn.updateQ(sender, verificator, false);
+                                QLearn.updateQ(sender, verificator, false);
                             } else {
                                 if (!QLearn.suspended.contains(sender)) {
                                     QLearn.updateQ(sender, verificator, true);
                                 }
                             }
+                            QLearn.updateIT(sender, verificator);
                             SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
                             SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
                             SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
@@ -162,7 +170,6 @@ public class Incentive {
                         QLearn.updateQ(sender, verificator, false);
                     }
                 }
-                QLearn.updateIT(sender, verificator);
             }
         }
 
