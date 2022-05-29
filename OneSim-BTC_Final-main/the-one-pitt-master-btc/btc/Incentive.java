@@ -131,7 +131,7 @@ public class Incentive {
 
                         if (verificator.getVerificatorChecked().containsKey(sender)) {
                             if (verificator.getVerificatorChecked().get(sender).equals(trusttoken)) {
-                                System.out.println("skipped");
+//                                System.out.println("skipped");
                                 return;
                             }
                         }
