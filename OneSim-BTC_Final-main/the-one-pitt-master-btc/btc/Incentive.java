@@ -155,6 +155,7 @@ public class Incentive {
 //                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
 //                                verificators.add(fail);
 //                            }
+// End Qlearn
 
 // with Fuzzy
                             SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
@@ -167,6 +168,7 @@ public class Incentive {
                             } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
                                 verificators.add(fail);
                             }
+// end with Fuzzy
                             verificator.getVerificatorChecked().put(sender, trusttoken);
                         }
                         tup.put(sender, verificators);
