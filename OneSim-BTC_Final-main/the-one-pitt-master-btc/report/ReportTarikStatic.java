@@ -220,6 +220,9 @@ public class ReportTarikStatic extends Report implements MessageListener {
         double persenVol = bantu.bagi(vol, (vol+mal));
         double persenMal = bantu.bagi(mal, (vol+mal));
         
+        cetak += "\n Total Insentif Mes :" + vol;
+        cetak += "\n Total Insentif Mis :" + mal;
+        
         cetak += "\n % Mes = " + persenVol;
         cetak += "\n % Mis = " + persenMal;
         

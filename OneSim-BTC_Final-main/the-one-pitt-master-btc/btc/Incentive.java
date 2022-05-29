@@ -147,16 +147,27 @@ public class Incentive {
                                 }
                             }
                             QLearn.updateIT(sender, verificator);
+
+
+// QLearn
+//                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
+//                                verificators.add(okay);
+//                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
+//                                verificators.add(fail);
+//                            }
+
+// with Fuzzy
                             SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
                             SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
                             SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
                             SimScenario.getInstance().getFb().evaluate();
                             double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
-                            if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
                                 verificators.add(okay);
-                            } else if (trust < -0.5) {
+                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
                                 verificators.add(fail);
                             }
+                            verificator.getVerificatorChecked().put(sender, trusttoken);
                         }
                         tup.put(sender, verificators);
                         verificating.put(m, tup);

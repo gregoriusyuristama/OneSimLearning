@@ -7,6 +7,7 @@ package report;
 
 import btc.Incentive;
 import core.DTNHost;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -14,7 +15,10 @@ import java.util.Map;
  * @author gregoriusyuristamanugraha
  */
 public class detectionTime extends Report {
-
+    
+    ArrayList<Double> listDetTime = new ArrayList<Double>();
+    Double sumDetTime = 0.0;
+    
     public detectionTime() {
         super.init();
     }
@@ -24,7 +28,10 @@ public class detectionTime extends Report {
         write("host,detection time");
         for (Map.Entry<DTNHost, Double> detTime : Incentive.detectionTime.entrySet()) {
             write(detTime.getKey() + "," + detTime.getValue());
+            listDetTime.add(detTime.getValue());
+            sumDetTime += detTime.getValue();
         }
+        write("Average : "+sumDetTime/listDetTime.size());
         super.done();
     }
 }
