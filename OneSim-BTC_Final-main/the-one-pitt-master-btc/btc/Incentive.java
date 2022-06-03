@@ -139,15 +139,27 @@ public class Incentive {
                         String fail = "-" + verificator;
 
                         if (!(verificators.contains(okay) || verificators.contains(fail))) {
+//Default
                             if (sender != host) {
-                                QLearn.updateQ(sender, verificator, false);
-                            } else {
-                                if (!QLearn.suspended.contains(sender)) {
-                                    QLearn.updateQ(sender, verificator, true);
+                                int rand = new Random().nextInt(2);
+                                if (rand == 0) {
+                                    verificators.add(okay);
+                                }else{
+                                    verificators.add(fail);
                                 }
+                            } else{
+                                verificators.add(okay);
                             }
+// end Default
+//QLearn and Fuzzy
+//                            if (sender != host) {
+//                                QLearn.updateQ(sender, verificator, false);
+//                            } else {
+//                                if (!QLearn.suspended.contains(sender)) {
+//                                    QLearn.updateQ(sender, verificator, true);
+//                                }
+//                            }
                             QLearn.updateIT(sender, verificator);
-
 
 // QLearn
 //                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
@@ -156,16 +168,15 @@ public class Incentive {
 //                                verificators.add(fail);
 //                            }
 // End Qlearn
-
 // with Fuzzy
                             SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
                             SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
                             SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
                             SimScenario.getInstance().getFb().evaluate();
                             double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
-                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                            if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
                                 verificators.add(okay);
-                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
+                            } else if (trust < -0.5) {
                                 verificators.add(fail);
                             }
 // end with Fuzzy
