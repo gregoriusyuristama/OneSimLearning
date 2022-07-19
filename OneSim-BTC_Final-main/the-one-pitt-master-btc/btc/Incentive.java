@@ -7,6 +7,7 @@ package btc;
 
 import core.DTNHost;
 import core.Message;
+import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.Tuple;
@@ -28,29 +29,29 @@ import rLearn.QLearn;
  * @author WINDOWS_X
  */
 public class Incentive {
-    
+
     private static boolean blacklistActive = true;
-    
+
     private static Map<Message, List<DTNHost>> ack = new HashMap<Message, List<DTNHost>>();
     private static Map<String, Tuple<Transaction, Boolean>> deposits = new HashMap<String, Tuple<Transaction, Boolean>>();
     private static Map<Message, Map<DTNHost, Set<String>>> verificating = new HashMap<Message, Map<DTNHost, Set<String>>>();
     private static Map<DTNHost, Set<byte[]>> trustToken = new HashMap<DTNHost, Set<byte[]>>();
     private static Map<Message, Set<String>> pending = new HashMap<Message, Set<String>>();
-    
+
     public static Map<DTNHost, Double> detectionTime = new HashMap<DTNHost, Double>();
-    
+
     private static Map<DTNHost, List<DTNHost>> detectedAccomplice = new HashMap<DTNHost, List<DTNHost>>();
-    
+
     private static Set<Message> finished = new HashSet<Message>();
-    
+
     public static Set<Message> getFinished() {
         return finished;
     }
     private static Set<DTNHost> blacklist = new HashSet<DTNHost>();
-    
+
     public Incentive() {
     }
-    
+
     public static void setAck(Message m, Map<DTNHost, PublicKey> publicKeys) {
         int in = 0;
         //baca node yang dilewati pesan
@@ -71,21 +72,15 @@ public class Incentive {
                 ke dalam verified list
                  */
                 String validation = m.toString() + host.toString();
-                
+
                 try {
                     String signature = do_RSADecryption(signatures.get(in), publicKeys.get(host));
                     if (signature.matches(validation)) {
 //                        System.out.println("verified : "+host);
                         verified.add(host);
                     } else {
-//                        System.out.println("cek : " + host);
-                        QLearn.updateITbadACK(host);
-//                        if (blacklistActive) {
-////                            blacklist.add(host);
-//                        }
                     }
                 } catch (Exception ex) {
-                    QLearn.updateITbadACK(host);
 //                    if (blacklistActive) {
 ////                        blacklist.add(host);
 //                    }
@@ -96,7 +91,7 @@ public class Incentive {
         }
         ack.put(m, verified);
     }
-    
+
     public static void setTrustToken(Map.Entry<DTNHost, Set<byte[]>> tToken, DTNHost sender, DTNHost verificator, Map<DTNHost, PublicKey> publicKeys) {
         //membaca pesan dari List messages
         DTNHost host = tToken.getKey();
@@ -128,7 +123,7 @@ public class Incentive {
                             tup = new HashMap<DTNHost, Set<String>>();
                             verificators = new HashSet<String>();
                         }
-                        
+
                         if (verificator.getVerificatorChecked().containsKey(sender)) {
                             if (verificator.getVerificatorChecked().get(sender).equals(trusttoken)) {
                                 return;
@@ -136,20 +131,50 @@ public class Incentive {
                         }
                         String okay = "+" + verificator;
                         String fail = "-" + verificator;
-                        
+
                         if (!(verificators.contains(okay) || verificators.contains(fail))) {
-//Default
-//                            if (sender != host) {
-//                                int rand = new Random().nextInt(2);
-//                                if (rand == 0) {
-//                                    verificators.add(okay);
-//                                }else{
-//                                    verificators.add(fail);
-//                                }
-//                            } else{
-//                                verificators.add(okay);
-//                            }
+                            int runMode = SimScenario.getInstance().mode;
+                            switch (runMode) {
+                                case 1:
+// QLearn
+                                    if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                                        verificators.add(okay);
+                                    } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
+                                        verificators.add(fail);
+                                    }
+                                    break;
+// End Qlearn
+                                case 2:
+// with Fuzzy
+                                    SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
+                                    SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
+                                    SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
+                                    SimScenario.getInstance().getFb().evaluate();
+                                    double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
+                                    if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                                        verificators.add(okay);
+                                    } else if (trust < -0.5) {
+                                        verificators.add(fail);
+                                    }
+                                    break;
+// end with Fuzzy
+                                default:
+// Default
+                                    if (sender != host) {
+                                        int rand = new Random().nextInt(2);
+                                        if (rand == 0) {
+                                            verificators.add(okay);
+                                        } else {
+                                            verificators.add(fail);
+                                        }
+                                    } else {
+                                        verificators.add(okay);
+                                    }
 // end Default
+                                    break;
+
+                            }
+
 //QLearn and Fuzzy
                             if (sender != host) {
                                 QLearn.updateQ(sender, verificator, false);
@@ -160,26 +185,6 @@ public class Incentive {
                             }
                             QLearn.updateIT(sender, verificator);
 
-// QLearn
-//                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
-//                                verificators.add(okay);
-//                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
-//                                verificators.add(fail);
-//                            }
-// End Qlearn
-// with Fuzzy
-                            SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
-                            SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
-                            SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
-                            SimScenario.getInstance().getFb().evaluate();
-                            double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
-                            if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
-                                verificators.add(okay);
-                            } else if (trust < -0.5) {
-                                verificators.add(fail);
-                            }
-// end with Fuzzy
-                            verificator.getVerificatorChecked().put(sender, trusttoken);
                         }
                         tup.put(sender, verificators);
                         verificating.put(m, tup);
@@ -195,24 +200,24 @@ public class Incentive {
                 }
             }
         }
-        
+
     }
-    
+
     public static void createIncentive() {
         for (Map.Entry<Message, Map<DTNHost, Set<String>>> entry : verificating.entrySet()) {
             Message message = entry.getKey();
             Map<DTNHost, Set<String>> value1 = entry.getValue();
-            
+
             for (Map.Entry<DTNHost, Set<String>> entry2 : value1.entrySet()) {
                 DTNHost host = entry2.getKey();
                 Set<String> verificators = entry2.getValue();
-                
+
                 int counterOk = 0;
                 int counterFail = 0;
-                
+
                 for (String verificator : verificators) {
                     if (verificator.startsWith("+")) {
-                        
+
                         counterOk++;
                     }
                     if (verificator.startsWith("-")) {
@@ -224,13 +229,13 @@ public class Incentive {
                     //tambahi if iki
                     if (!finished.contains(message)) {
                         Set<String> hasil;
-                        
+
                         if (pending.containsKey(message)) {
                             hasil = pending.get(message);
                         } else {
                             hasil = new HashSet<String>();
                         }
-                        
+
                         String fail = "-" + host;
                         String ok = "+" + host;
                         if (!(hasil.contains(ok) || hasil.contains(fail))) {
@@ -251,14 +256,14 @@ public class Incentive {
                     break;
                 }
             }
-            
+
         }
-        
+
         if (!pending.isEmpty()) {
             prosesPayment();
         }
     }
-    
+
     public static void prosesPayment() {
         //tambahi tobedel iki
         Set<Message> toBeDel = new HashSet<Message>();
@@ -274,10 +279,10 @@ public class Incentive {
                             Tuple<Transaction, Boolean> newTup = new Tuple<Transaction, Boolean>(tup.getKey(), true);
                             deposits.put(m.toString(), newTup);
                         }
-                        
+
                         List<DTNHost> hosts = ack.get(m);
                         List<DTNHost> pay = new ArrayList<DTNHost>();
-                        
+
                         for (DTNHost d : hosts) {
                             String ok = "+" + d;
                             if (!QLearn.suspended.contains(d)) {
@@ -286,12 +291,12 @@ public class Incentive {
                                 }
                             }
                         }
-                        
+
                         float amount = rewards / pay.size();
-                        
+
                         float updateamount = rewards;
                         int indx = 0;
-                        
+
                         for (DTNHost p : pay) {
                             if (indx < pay.size() - 1) {
                                 BlockChain.addTransaction(m.getTo().getWallet().sendFunds(p.getWallet().publicKey, amount));
@@ -316,48 +321,48 @@ public class Incentive {
             pending.remove(m);
 //            System.out.println("removed : " + ack.get(m));
             ack.remove(m);
-            
+
         }
     }
-    
+
     public static void setDeposit(String message, Transaction trx) {
         Tuple<Transaction, Boolean> tup = new Tuple<Transaction, Boolean>(trx, false);
         deposits.put(message, tup);
     }
-    
+
     public static String do_RSADecryption(byte[] cipherText, PublicKey publicKey) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA");
-        
+
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
         byte[] result = cipher.doFinal(cipherText);
-        
+
         return new String(result);
     }
-    
+
     public static Map<Message, List<DTNHost>> getAck() {
         return ack;
     }
-    
+
     public static Set<DTNHost> getBlacklist() {
         return blacklist;
     }
-    
+
     public static Map<DTNHost, Set<byte[]>> getTrustToken() {
         return trustToken;
     }
-    
+
     public static Map<Message, Map<DTNHost, Set<String>>> getVerificating() {
         return verificating;
     }
-    
+
     public static Map<Message, Set<String>> getPending() {
         return pending;
     }
-    
+
     public static boolean isBlacklistActive() {
         return blacklistActive;
     }
-    
+
     private static Double getAverage(ArrayList arr) {
         Double sum = 0.0;
         for (int i = 0; i < arr.size(); i++) {
@@ -365,9 +370,9 @@ public class Incentive {
         }
         return sum / arr.size();
     }
-    
+
     public static Map<DTNHost, List<DTNHost>> getDetectedAccomplice() {
         return detectedAccomplice;
     }
-    
+
 }

@@ -44,12 +44,13 @@ public class QLearn {
     }
     public static Set<DTNHost> suspended = new HashSet<DTNHost>();
 
-    private static Double BSI = 43200.0; //12 jam
+    private static final Double BSI = 43200.0; //12 jam
+    private static final Double AM = 1800.0;
 
     private static void satisfiedTrx(DTNHost verificator, DTNHost host) {
         directTrust.get(verificator).put(host, directTrust.get(verificator).get(host) + verificator.getCoopFactor() * (1 - Math.abs(directTrust.get(verificator).get(host))));
-        if ((suspension.get(host) - 1800.0) >= 0.0) {
-            suspension.put(host, suspension.get(host) - 1800.0);
+        if ((suspension.get(host) - AM) >= 0.0) {
+            suspension.put(host, suspension.get(host) - AM);
         } else {
             suspension.put(host, 0.0);
         }
