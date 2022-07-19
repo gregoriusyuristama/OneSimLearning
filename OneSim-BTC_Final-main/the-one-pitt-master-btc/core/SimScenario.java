@@ -329,7 +329,7 @@ public class SimScenario implements Serializable {
             System.exit(1);
         }
         this.fb= fis.getFunctionBlock("tipper");
-//        JFuzzyChart.get().chart(fb);
+        JFuzzyChart.get().chart(fb);
     }
 
     /**

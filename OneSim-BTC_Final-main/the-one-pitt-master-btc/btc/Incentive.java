@@ -17,6 +17,7 @@ import java.util.*;
 import javax.crypto.Cipher;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import routing.DecisionEngineRouter;
 import routing.MessageRouter;
 import routing.RoutingDecisionEngine;
@@ -43,9 +44,6 @@ public class Incentive {
 
     private static Set<Message> finished = new HashSet<Message>();
 
-    public static Set<Message> getFinished() {
-        return finished;
-    }
     private static Set<DTNHost> blacklist = new HashSet<DTNHost>();
 
     public Incentive() {
@@ -79,13 +77,13 @@ public class Incentive {
                         verified.add(host);
                     } else {
 //                        System.out.println("cek : " + host);
-                        QLearn.updateITbadACK(host);
+//                        QLearn.updateITbadACK(host);
 //                        if (blacklistActive) {
 ////                            blacklist.add(host);
 //                        }
                     }
                 } catch (Exception ex) {
-                    QLearn.updateITbadACK(host);
+//                    QLearn.updateITbadACK(host);
 //                    if (blacklistActive) {
 ////                        blacklist.add(host);
 //                    }
@@ -140,25 +138,25 @@ public class Incentive {
 
                         if (!(verificators.contains(okay) || verificators.contains(fail))) {
 //Default
-                            if (sender != host) {
-                                int rand = new Random().nextInt(2);
-                                if (rand == 0) {
-                                    verificators.add(okay);
-                                }else{
-                                    verificators.add(fail);
-                                }
-                            } else{
-                                verificators.add(okay);
-                            }
-// end Default
-//QLearn and Fuzzy
 //                            if (sender != host) {
-//                                QLearn.updateQ(sender, verificator, false);
-//                            } else {
-//                                if (!QLearn.suspended.contains(sender)) {
-//                                    QLearn.updateQ(sender, verificator, true);
+//                                int rand = new Random().nextInt(2);
+//                                if (rand == 0) {
+//                                    verificators.add(okay);
+//                                }else{
+//                                    verificators.add(fail);
 //                                }
+//                            } else{
+//                                verificators.add(okay);
 //                            }
+//// end Default
+//QLearn and Fuzzy
+                            if (sender != host) {
+                                QLearn.updateQ(sender, verificator, false);
+                            } else {
+                                if (!QLearn.suspended.contains(sender)) {
+                                    QLearn.updateQ(sender, verificator, true);
+                                }
+                            }
                             QLearn.updateIT(sender, verificator);
 
 // QLearn
@@ -174,6 +172,7 @@ public class Incentive {
                             SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
                             SimScenario.getInstance().getFb().evaluate();
                             double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
+//                            JFuzzyChart.get().chart(SimScenario.getInstance().getFb().getVariable("trust"),SimScenario.getInstance().getFb().getVariable("trust").getDefuzzifier(), true);
                             if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
                                 verificators.add(okay);
                             } else if (trust < -0.5) {
@@ -322,7 +321,6 @@ public class Incentive {
             pending.remove(m);
 //            System.out.println("removed : " + ack.get(m));
             ack.remove(m);
-
         }
     }
 

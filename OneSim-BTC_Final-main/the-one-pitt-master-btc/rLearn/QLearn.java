@@ -11,7 +11,6 @@ import core.SimScenario;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,9 +23,11 @@ public class QLearn {
     public static Map<DTNHost, Map<DTNHost, Double>> directTrust = new HashMap<DTNHost, Map<DTNHost, Double>>();
     public static Map<DTNHost, Double> suspension = new HashMap<DTNHost, Double>();
     public static Map<DTNHost, ArrayList<Double>> indirectTrust = new HashMap<DTNHost, ArrayList<Double>>();
-    
- 
-   public static Map<DTNHost, Integer> updateCounter = new HashMap<DTNHost, Integer>();
+
+    private static final Double BSI = 43200.0; //12 jam
+    private static final Double AMNESTY_FACTOR = 1800.0;
+
+    public static Map<DTNHost, Integer> updateCounter = new HashMap<DTNHost, Integer>();
 
     public QLearn(Settings settings) {
     }
@@ -44,12 +45,10 @@ public class QLearn {
     }
     public static Set<DTNHost> suspended = new HashSet<DTNHost>();
 
-    private static Double BSI = 43200.0; //12 jam
-
     private static void satisfiedTrx(DTNHost verificator, DTNHost host) {
         directTrust.get(verificator).put(host, directTrust.get(verificator).get(host) + verificator.getCoopFactor() * (1 - Math.abs(directTrust.get(verificator).get(host))));
-        if ((suspension.get(host) - 1800.0) >= 0.0) {
-            suspension.put(host, suspension.get(host) - 1800.0);
+        if ((suspension.get(host) - AMNESTY_FACTOR) >= 0.0) {
+            suspension.put(host, suspension.get(host) - AMNESTY_FACTOR);
         } else {
             suspension.put(host, 0.0);
         }
@@ -76,7 +75,7 @@ public class QLearn {
         } else {
             unsatisfiedTrx(verificator, host);
         }
-        
+
     }
 
     public static void updateITbadACK(DTNHost host) {
@@ -94,13 +93,13 @@ public class QLearn {
             }
         }
     }
-    
-   public static double getAvgIT(DTNHost h){
-       ArrayList<Double> ITList = indirectTrust.get(h);
-       Double sum = 0.0;
-       for (Double it : ITList) {
-           sum += it;
-       }
-       return sum/ITList.size();
-   }
+
+    public static double getAvgIT(DTNHost h) {
+        ArrayList<Double> ITList = indirectTrust.get(h);
+        Double sum = 0.0;
+        for (Double it : ITList) {
+            sum += it;
+        }
+        return sum / ITList.size();
+    }
 }
