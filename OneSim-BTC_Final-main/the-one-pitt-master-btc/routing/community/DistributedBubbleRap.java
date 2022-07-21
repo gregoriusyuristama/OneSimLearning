@@ -208,11 +208,6 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     }
 
     public boolean shouldDeleteSentMessage(Message m, DTNHost otherHost) {
-        // DiBuBB allows a node to remove a message once it's forwarded it into the
-        // local community of the destination
-//		DistributedBubbleRap de = this.getOtherDecisionEngine(otherHost);
-//		return de.commumesWithHost(m.getTo()) && 
-//			!this.commumesWithHost(m.getTo());
         return true;
     }
 

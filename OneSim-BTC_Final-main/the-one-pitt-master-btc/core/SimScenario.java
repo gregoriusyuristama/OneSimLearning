@@ -18,7 +18,6 @@ import movement.MovementModel;
 import movement.map.SimMap;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
-import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import rLearn.QLearn;
 import routing.MessageRouter;
 
@@ -165,6 +164,7 @@ public class SimScenario implements Serializable {
      * List of misbehaves in this simulation
      */
     protected List<DTNHost> misbehaves;
+    protected List<DTNHost> messenger;
 
     protected List<DTNHost> verificator;
     /**
@@ -268,6 +268,17 @@ public class SimScenario implements Serializable {
         } else {
             mode = 0;
         }
+        switch (mode) {
+            case 1:
+                System.out.println("Running QLearn Only");
+                break;
+            case 2:
+                System.out.println("Running QLearn with Fuzzy");
+                break;
+            default:
+                System.out.println("Running Default");
+                break;
+        }
 
         ensurePositiveValue(nrofGroups, NROF_GROUPS_S);
         ensurePositiveValue(endTime, END_TIME_S);
@@ -290,8 +301,9 @@ public class SimScenario implements Serializable {
         this.worldSizeY = worldSize[1];
 
         createHosts();
-
         initQLearn();
+        System.out.println("Messenger : " + getMessenger().size());
+        System.out.println("Misbehaves : " + getMisbehaves().size());
 
         this.world = new World(hosts, worldSizeX, worldSizeY, updateInterval,
                 updateListeners, simulateConnections,
@@ -337,7 +349,7 @@ public class SimScenario implements Serializable {
             System.err.println("Can't load file: '" + filename + "'");
             System.exit(1);
         }
-        this.fb = fis.getFunctionBlock("tipper");
+        this.fb = fis.getFunctionBlock("fuzzy_trust");
 //        JFuzzyChart.get().chart(fb);
     }
 
@@ -507,6 +519,7 @@ public class SimScenario implements Serializable {
     protected void createHosts() {
         this.hosts = new ArrayList<DTNHost>();
         this.misbehaves = new ArrayList<DTNHost>();
+        this.messenger = new ArrayList<DTNHost>();
         this.verificator = new ArrayList<DTNHost>();
 
         for (int i = 1; i <= nrofGroups; i++) {
@@ -620,6 +633,9 @@ public class SimScenario implements Serializable {
                 if (gid.equalsIgnoreCase("Misbe")) {
                     misbehaves.add(host);
                 }
+                if (gid.equalsIgnoreCase("Messenger")) {
+                    messenger.add(host);
+                }
                 if (gid.equalsIgnoreCase("Verificator")) {
                     verificator.add(host);
                 }
@@ -653,6 +669,10 @@ public class SimScenario implements Serializable {
      */
     public List<DTNHost> getMisbehaves() {
         return this.misbehaves;
+    }
+
+    public List<DTNHost> getMessenger() {
+        return this.messenger;
     }
 
     public List<DTNHost> getVerificator() {

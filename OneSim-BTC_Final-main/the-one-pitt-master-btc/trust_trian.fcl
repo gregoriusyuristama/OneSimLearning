@@ -10,7 +10,7 @@
 									pcingola@users.sourceforge.net
 */
 
-FUNCTION_BLOCK tipper	// Block definition (there may be more than one block per file)
+FUNCTION_BLOCK fuzzy_trust	// Block definition (there may be more than one block per file)
 
 VAR_INPUT				// Define input variables
 	directTrust : REAL;
