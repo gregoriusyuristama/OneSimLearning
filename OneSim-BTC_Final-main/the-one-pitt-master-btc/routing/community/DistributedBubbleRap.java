@@ -59,7 +59,7 @@ import routing.RoutingDecisionEngine;
  * @author PJ Dillon, University of Pittsburgh
  *
  */
-public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDetectionEngine, EncounterDetectionEngine {
+public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDetectionEngine {
 
     /**
      * Community Detection Algorithm to employ -setting id {@value}
@@ -115,11 +115,10 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
         startTimestamps = new HashMap<DTNHost, Double>();
         connHistory = new HashMap<DTNHost, List<Duration>>();
 
-
     }
 
     public void connectionUp(DTNHost thisHost, DTNHost peer) {
- 
+
 //        System.out.println(frekBertemuTotal.get(thisHost));
     }
 
@@ -199,7 +198,7 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
         if (isMessenger(otherHost) || isMisbehave(otherHost)) {
             if (!otherDe.getBlacklist().contains(otherHost)) {
                 if (!m.getHops().contains(otherHost)) {
-                  return true;
+                    return true;
                 }
             }
         }
@@ -212,9 +211,10 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     }
 
     public boolean shouldDeleteOldMessage(Message m, DTNHost hostReportingOld) {
-        DistributedBubbleRap de = this.getOtherDecisionEngine(hostReportingOld);
-        return de.commumesWithHost(m.getTo())
-                && !this.commumesWithHost(m.getTo());
+//        DistributedBubbleRap de = this.getOtherDecisionEngine(hostReportingOld);
+//        return de.commumesWithHost(m.getTo())
+//                && !this.commumesWithHost(m.getTo());
+        return true;
     }
 
     public RoutingDecisionEngine replicate() {
@@ -275,17 +275,6 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
 
     @Override
     public void update(DTNHost thisHost) {
-    }
-
-    @Override
-    public Map<DTNHost, Integer> getEncounter() {
-        return frekBertemuVer;
-    }
-
-    @Override
-    public Double getProbability(DTNHost h) {
-        Double probability = frekBertemuVer.get(h).doubleValue() / frekBertemuTotal.get(h).doubleValue();
-        return probability;
     }
 
 }

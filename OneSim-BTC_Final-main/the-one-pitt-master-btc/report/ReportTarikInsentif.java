@@ -161,18 +161,18 @@ public class ReportTarikInsentif extends Report implements MessageListener {
 //            }
 //            cetak += "\n";
 //        }
-        cetak += "Message\n";
-        for (Message m : this.pesen){
-            cetak += "Message : " + m.toString() + "\n";
-            cetak += "price : " + m.getProperty("rewards") + "\n";
-            cetak += "via : ";
-            for(DTNHost d : m.getHops()){
-                cetak += d.toString() + " : \n";
-                cetak += d.getWallet().publicKey + " : \n\n";
-            }
-            
-            cetak += "\n";
-        }
+//        cetak += "Message\n";
+//        for (Message m : this.pesen){
+//            cetak += "Message : " + m.toString() + "\n";
+//            cetak += "price : " + m.getProperty("rewards") + "\n";
+//            cetak += "via : ";
+//            for(DTNHost d : m.getHops()){
+//                cetak += d.toString() + " : \n";
+//                cetak += d.getWallet().publicKey + " : \n\n";
+//            }
+//            
+//            cetak += "\n";
+//        }
 //        
 //        cetak += "Transaction List\n";
 //        for (Transaction trx : Incentive.getPayment()){
