@@ -25,7 +25,7 @@ import routing.DecisionEngineRouter;
  * ratio if no messages were delivered) "NaN" is reported for double values and
  * zero for integer median(s).
  */
-public class ReportTarikStatic extends Report implements MessageListener {
+public class ReportTarikInsentif extends Report implements MessageListener {
 
     private Map<String, Double> creationTimes;
     private List<Double> latencies;
@@ -47,7 +47,7 @@ public class ReportTarikStatic extends Report implements MessageListener {
     /**
      * Constructor.
      */
-    public ReportTarikStatic() {
+    public ReportTarikInsentif() {
         init();
     }
 

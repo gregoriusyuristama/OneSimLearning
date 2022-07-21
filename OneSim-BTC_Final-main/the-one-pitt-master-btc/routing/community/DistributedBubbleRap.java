@@ -115,28 +115,11 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
         startTimestamps = new HashMap<DTNHost, Double>();
         connHistory = new HashMap<DTNHost, List<Duration>>();
 
-        frekBertemuVer = new HashMap<DTNHost, Integer>();
-        frekBertemuTotal = new HashMap<DTNHost, Integer>();
-//        msgCounter = new HashMap<DTNHost, Map<DTNHost, Integer>>();
 
     }
 
     public void connectionUp(DTNHost thisHost, DTNHost peer) {
-        if (!frekBertemuTotal.containsKey(thisHost)) {
-            frekBertemuTotal.put(thisHost, 1);
-        } else {
-            frekBertemuTotal.put(thisHost, (frekBertemuTotal.get(thisHost) + 1));
-        }
-        if (isMessenger(thisHost) || isMisbehave(thisHost)) {
-            if (isVerificator(peer)) {
-                if (!frekBertemuVer.containsKey(thisHost)) {
-                    frekBertemuVer.put(thisHost, 1);
-                } else {
-                    frekBertemuVer.put(thisHost, (frekBertemuVer.get(thisHost) + 1));
-                }
-//                System.out.println("Frek Bertemu Ver " + thisHost + " : " + frekBertemuVer.get(thisHost));
-            }
-        }
+ 
 //        System.out.println(frekBertemuTotal.get(thisHost));
     }
 
@@ -208,18 +191,7 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     public boolean shouldSendMessageToHost(Message m, DTNHost otherHost, DTNHost thisHost) {
         DecisionEngineRouter otherDe = (DecisionEngineRouter) otherHost.getRouter();
 
-//        Map<DTNHost, Integer> msgCount = new HashMap<DTNHost, Integer>();
         if (m.getTo() == otherHost) {
-
-//            if (!this.msgCounter.containsKey(thisHost)) {
-//                msgCount.put(otherHost, 1);
-//                msgCounter.put(thisHost, msgCount);
-//            } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
-//                msgCounter.get(thisHost).put(otherHost, 1);
-//            } else {
-//                msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
-//            }
-//            msgCount.clear();
             return true; // trivial to deliver to final dest
         }
 
@@ -227,59 +199,7 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
         if (isMessenger(otherHost) || isMisbehave(otherHost)) {
             if (!otherDe.getBlacklist().contains(otherHost)) {
                 if (!m.getHops().contains(otherHost)) {
-                    /*
-                             * Here is where we decide when to forward along a message. 
-                             * 
-                             * DiBuBB works such that it first forwards to the most globally central
-                             * nodes in the network until it finds a node that has the message's 
-                             * destination as part of it's local community. At this point, it uses 
-                             * the local centrality metric to forward a message within the community. 
-                     */
-                    DTNHost dest = m.getTo();
-                    DistributedBubbleRap de = getOtherDecisionEngine(otherHost);
-                    // Which of us has the dest in our local communities, this host or the peer
-                    boolean peerInCommunity = de.commumesWithHost(dest);
-                    boolean meInCommunity = this.commumesWithHost(dest);
-
-                    if (peerInCommunity && !meInCommunity) {
-
-//                        
-//                        if (!this.msgCounter.containsKey(thisHost)) {
-//                            msgCount.put(otherHost, 1);
-//                            msgCounter.put(thisHost, msgCount);
-//                        } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
-//                            msgCounter.get(thisHost).put(otherHost, 1);
-//                        } else {
-//                            msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
-//                        }
-//                        msgCount.clear();
-                        // peer is in local commun. of dest
-                        return true;
-                    } else if (!peerInCommunity && meInCommunity) // I'm in local commun. of dest
-                    {
-                        return false;
-                    } else if (peerInCommunity) // we're both in the local community of destination
-                    {
-                        // Forward to the one with the higher local centrality (in our community)
-                        if (de.getLocalCentrality() > this.getLocalCentrality()) {
-
-//                            if (!this.msgCounter.containsKey(thisHost)) {
-//                                msgCount.put(otherHost, 1);
-//                                msgCounter.put(thisHost, msgCount);
-//                            } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
-//                                msgCounter.get(thisHost).put(otherHost, 1);
-//                            } else {
-//                                msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
-//                            }
-//                            msgCount.clear();
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    } // Neither in local community, forward to more globally central node
-                    else if (de.getGlobalCentrality() > this.getGlobalCentrality()) {
-                        return true;
-                    }
+                  return true;
                 }
             }
         }

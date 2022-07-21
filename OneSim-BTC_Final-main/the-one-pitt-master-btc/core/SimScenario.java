@@ -149,6 +149,7 @@ public class SimScenario implements Serializable {
     private static final String NEGFACTOR = "negFactor";
 
     private static final String FUZZYFILE = "fuzzyfile";
+    private static final String RUN_MODE = "runMode";
 
     /**
      * The world instance
@@ -230,6 +231,7 @@ public class SimScenario implements Serializable {
 
     private FIS fis;
     private FunctionBlock fb;
+    public int mode;
 
     public FunctionBlock getFb() {
         return fb;
@@ -255,9 +257,17 @@ public class SimScenario implements Serializable {
         this.endTime = s.getDouble(END_TIME_S);
         this.updateInterval = s.getDouble(UP_INT_S);
         this.simulateConnections = s.getBoolean(SIM_CON_S);
-        
-        
-        readFuzzyFile(s.getSetting(FUZZYFILE));
+
+        if (s.contains(RUN_MODE)) {
+            mode = s.getInt(RUN_MODE);
+            if (mode == 2) { //Fuzzy and Qlearn
+                readFuzzyFile(s.getSetting(FUZZYFILE));
+            } else if (mode > 2) {
+                mode = 0;
+            }
+        } else {
+            mode = 0;
+        }
 
         ensurePositiveValue(nrofGroups, NROF_GROUPS_S);
         ensurePositiveValue(endTime, END_TIME_S);
@@ -279,7 +289,6 @@ public class SimScenario implements Serializable {
         this.worldSizeX = worldSize[0];
         this.worldSizeY = worldSize[1];
 
-        
         createHosts();
 
         initQLearn();
@@ -328,8 +337,8 @@ public class SimScenario implements Serializable {
             System.err.println("Can't load file: '" + filename + "'");
             System.exit(1);
         }
-        this.fb= fis.getFunctionBlock("tipper");
-        JFuzzyChart.get().chart(fb);
+        this.fb = fis.getFunctionBlock("tipper");
+//        JFuzzyChart.get().chart(fb);
     }
 
     /**

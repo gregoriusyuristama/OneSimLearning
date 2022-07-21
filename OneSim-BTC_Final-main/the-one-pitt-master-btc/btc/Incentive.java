@@ -7,6 +7,7 @@ package btc;
 
 import core.DTNHost;
 import core.Message;
+import core.Settings;
 import core.SimClock;
 import core.SimScenario;
 import core.Tuple;
@@ -39,8 +40,6 @@ public class Incentive {
     private static Map<Message, Set<String>> pending = new HashMap<Message, Set<String>>();
 
     public static Map<DTNHost, Double> detectionTime = new HashMap<DTNHost, Double>();
-
-    private static Map<DTNHost, List<DTNHost>> detectedAccomplice = new HashMap<DTNHost, List<DTNHost>>();
 
     private static Set<Message> finished = new HashSet<Message>();
 
@@ -76,17 +75,9 @@ public class Incentive {
 //                        System.out.println("verified : "+host);
                         verified.add(host);
                     } else {
-//                        System.out.println("cek : " + host);
-//                        QLearn.updateITbadACK(host);
-//                        if (blacklistActive) {
-////                            blacklist.add(host);
-//                        }
                     }
                 } catch (Exception ex) {
-//                    QLearn.updateITbadACK(host);
-//                    if (blacklistActive) {
-////                        blacklist.add(host);
-//                    }
+
                 }
             }
             //index naik untuk membaca isi list wallet dari awal hingga akhir
@@ -99,7 +90,6 @@ public class Incentive {
         //membaca pesan dari List messages
         DTNHost host = tToken.getKey();
         Set<byte[]> messages = tToken.getValue();
-//        QLearn.initDT(verificator, sender);
         for (byte[] message : messages) {
             String trusttoken = "";
             try {
@@ -127,70 +117,66 @@ public class Incentive {
                             verificators = new HashSet<String>();
                         }
 
-                        if (verificator.getVerificatorChecked().containsKey(sender)) {
-                            if (verificator.getVerificatorChecked().get(sender).equals(trusttoken)) {
-//                                System.out.println("skipped");
-                                return;
-                            }
-                        }
                         String okay = "+" + verificator;
                         String fail = "-" + verificator;
 
                         if (!(verificators.contains(okay) || verificators.contains(fail))) {
-//Default
-//                            if (sender != host) {
-//                                int rand = new Random().nextInt(2);
-//                                if (rand == 0) {
-//                                    verificators.add(okay);
-//                                }else{
-//                                    verificators.add(fail);
-//                                }
-//                            } else{
-//                                verificators.add(okay);
-//                            }
-//// end Default
-//QLearn and Fuzzy
-                            if (sender != host) {
-                                QLearn.updateQ(sender, verificator, false);
-                            } else {
-                                if (!QLearn.suspended.contains(sender)) {
-                                    QLearn.updateQ(sender, verificator, true);
+                            int runMode = SimScenario.getInstance().mode;
+                            if (runMode == 1 || runMode == 2) {
+                                if (sender != host) {
+                                    QLearn.updateQ(sender, verificator, false);
+                                } else {
+                                    if (!QLearn.suspended.contains(sender)) {
+                                        QLearn.updateQ(sender, verificator, true);
+                                    }
                                 }
+                                QLearn.updateIT(sender, verificator);
                             }
-                            QLearn.updateIT(sender, verificator);
-
+                            switch (runMode) {
+                                case 1:
 // QLearn
-//                            if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
-//                                verificators.add(okay);
-//                            } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
-//                                verificators.add(fail);
-//                            }
+                                    if (QLearn.directTrust.get(verificator).get(sender) > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                                        verificators.add(okay);
+                                    } else if (QLearn.directTrust.get(verificator).get(sender) < -0.5) {
+                                        verificators.add(fail);
+                                    }
+                                    break;
 // End Qlearn
+                                case 2:
 // with Fuzzy
-                            SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
-                            SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
-                            SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
-                            SimScenario.getInstance().getFb().evaluate();
-                            double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
-//                            JFuzzyChart.get().chart(SimScenario.getInstance().getFb().getVariable("trust"),SimScenario.getInstance().getFb().getVariable("trust").getDefuzzifier(), true);
-                            if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
-                                verificators.add(okay);
-                            } else if (trust < -0.5) {
-                                verificators.add(fail);
-                            }
+                                    SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.directTrust.get(verificator).get(sender));
+                                    SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getAvgIT(sender));
+                                    SimScenario.getInstance().getFb().setVariable("suspension", QLearn.suspension.get(sender));
+                                    SimScenario.getInstance().getFb().evaluate();
+                                    double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
+                                    if (trust > 0.5 && !QLearn.getSuspended().contains(sender)) {
+                                        verificators.add(okay);
+                                    } else if (trust < -0.5) {
+                                        verificators.add(fail);
+                                    }
+                                    break;
 // end with Fuzzy
-                            verificator.getVerificatorChecked().put(sender, trusttoken);
+                                default:
+// Default
+                                    if (sender != host) {
+                                        int rand = new Random().nextInt(2);
+                                        if (rand == 0) {
+                                            verificators.add(okay);
+                                        } else {
+                                            verificators.add(fail);
+                                        }
+                                    } else {
+                                        verificators.add(okay);
+                                    }
+// end Default
+                                    break;
+
+                            }
+
+//QLearn and Fuzzy
                         }
                         tup.put(sender, verificators);
                         verificating.put(m, tup);
-                    } else {
-                        System.out.println("Message : " + entry.getKey());
-                        System.out.println("Host " + hosts);
-                        System.out.println("detected  sender : " + sender + " host : " + host);
-                        System.out.println("Message : " + m.toString());
-                        System.out.println("Trusttoken : " + trusttoken);
-                        System.out.println("Host : " + host);
-                        QLearn.updateQ(sender, verificator, false);
                     }
                 }
             }
@@ -233,7 +219,6 @@ public class Incentive {
 
                         String fail = "-" + host;
                         String ok = "+" + host;
-//                        System.out.println(Math.round(SimScenario.getInstance().getVerificator().size()/2.0));
                         if (!(hasil.contains(ok) || hasil.contains(fail))) {
                             if (counterOk >= totalVerificator) {
                                 hasil.add(ok);
@@ -251,16 +236,12 @@ public class Incentive {
                 } else {
                     break;
                 }
-//                System.out.println("pending");
-//                System.out.println(pending);
             }
 
         }
 
         if (!pending.isEmpty()) {
-//            System.out.println("finished : " + finished);
             prosesPayment();
-//            System.out.println("blacklist : " + blacklist);
         }
     }
 
@@ -368,10 +349,6 @@ public class Incentive {
             sum += (Double) arr.get(i);
         }
         return sum / arr.size();
-    }
-
-    public static Map<DTNHost, List<DTNHost>> getDetectedAccomplice() {
-        return detectedAccomplice;
     }
 
 }
