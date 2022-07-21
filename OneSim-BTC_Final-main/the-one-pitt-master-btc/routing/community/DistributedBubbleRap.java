@@ -208,7 +208,18 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     public boolean shouldSendMessageToHost(Message m, DTNHost otherHost, DTNHost thisHost) {
         DecisionEngineRouter otherDe = (DecisionEngineRouter) otherHost.getRouter();
 
+//        Map<DTNHost, Integer> msgCount = new HashMap<DTNHost, Integer>();
         if (m.getTo() == otherHost) {
+
+//            if (!this.msgCounter.containsKey(thisHost)) {
+//                msgCount.put(otherHost, 1);
+//                msgCounter.put(thisHost, msgCount);
+//            } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
+//                msgCounter.get(thisHost).put(otherHost, 1);
+//            } else {
+//                msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
+//            }
+//            msgCount.clear();
             return true; // trivial to deliver to final dest
         }
 
@@ -231,6 +242,17 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
                     boolean meInCommunity = this.commumesWithHost(dest);
 
                     if (peerInCommunity && !meInCommunity) {
+
+//                        
+//                        if (!this.msgCounter.containsKey(thisHost)) {
+//                            msgCount.put(otherHost, 1);
+//                            msgCounter.put(thisHost, msgCount);
+//                        } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
+//                            msgCounter.get(thisHost).put(otherHost, 1);
+//                        } else {
+//                            msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
+//                        }
+//                        msgCount.clear();
                         // peer is in local commun. of dest
                         return true;
                     } else if (!peerInCommunity && meInCommunity) // I'm in local commun. of dest
@@ -240,6 +262,16 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
                     {
                         // Forward to the one with the higher local centrality (in our community)
                         if (de.getLocalCentrality() > this.getLocalCentrality()) {
+
+//                            if (!this.msgCounter.containsKey(thisHost)) {
+//                                msgCount.put(otherHost, 1);
+//                                msgCounter.put(thisHost, msgCount);
+//                            } else if (!msgCounter.get(thisHost).containsKey(otherHost)) {
+//                                msgCounter.get(thisHost).put(otherHost, 1);
+//                            } else {
+//                                msgCounter.get(thisHost).put(otherHost, (msgCounter.get(thisHost).get(otherHost) + 1));
+//                            }
+//                            msgCount.clear();
                             return true;
                         } else {
                             return false;
