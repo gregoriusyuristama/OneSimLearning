@@ -18,6 +18,7 @@ import movement.MovementModel;
 import movement.map.SimMap;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 import rLearn.QLearn;
 import routing.MessageRouter;
 

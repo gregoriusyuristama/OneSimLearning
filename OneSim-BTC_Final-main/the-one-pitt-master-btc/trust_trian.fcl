@@ -41,9 +41,9 @@ FUZZIFY suspension			// Fuzzify input variable 'food': { 'rancid', 'delicious' }
 END_FUZZIFY
 
 DEFUZZIFY trust			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	TERM low := trian -1 -0.1 0.1 ; 
-	TERM medium := trian 0.0 0.2 0.4;
-	TERM high := trian 0.3 0.5 1 ;
+	TERM low := trape -1 -1 -0.5 0 ; 
+	TERM medium := trape -0.5 -0.25 0.25 0.5;
+	TERM high := trape 0 0.5 1 1 ;
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY

@@ -145,16 +145,8 @@ public class Cloud {
                             int runMode = SimScenario.getInstance().mode;
                             if (runMode == 1 || runMode == 2) {
                                 if (sender != host) {
-                                    System.out.println("Q Down");
-                                    System.out.println("Message : "+trusttoken);
-                                    System.out.println("Host : "+host);
-                                    System.out.println("Sender : "+sender);
                                     QLearn.getQInstance().updateQ(sender, verificator, false);
                                 } else {
-                                    System.out.println("Q Up");
-                                    System.out.println("Message : "+trusttoken);
-                                    System.out.println("Host : "+host);
-                                    System.out.println("Sender : "+sender);
                                     if (!QLearn.getQInstance().suspended.contains(sender)) {
                                         QLearn.getQInstance().updateQ(sender, verificator, true);
                                     }

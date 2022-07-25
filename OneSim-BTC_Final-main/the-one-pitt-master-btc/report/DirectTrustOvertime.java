@@ -56,11 +56,15 @@ public class DirectTrustOvertime extends Report implements UpdateListener {
                     Map<DTNHost, ArrayList<Double>> initTrust = new HashMap<DTNHost, ArrayList<Double>>();
                     ArrayList listTrust = new ArrayList();
                     initTrust.put(m, listTrust);
-                    if (!trustMap.containsKey(v)) {
-                        trustMap.put(v, initTrust);
-                    } else {
-                        trustMap.get(v).put(m, listTrust);
+
+                    if (SimScenario.getInstance().mode == 2) {
+                        if (!trustMap.containsKey(v)) {
+                            trustMap.put(v, initTrust);
+                        } else {
+                            trustMap.get(v).put(m, listTrust);
+                        }
                     }
+
                     ArrayList listSus = new ArrayList();
                     suspensionMap.put(m, listSus);
                 }
@@ -83,17 +87,19 @@ public class DirectTrustOvertime extends Report implements UpdateListener {
                         curDT.put(h, listDT);
                         directTrustMap.put(ver, curDT);
 
-                        SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.getQInstance().directTrust.get(ver).get(h));
-                        SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getQInstance().getAvgIT(h));
-                        SimScenario.getInstance().getFb().setVariable("suspension", QLearn.getQInstance().suspension.get(h));
-                        SimScenario.getInstance().getFb().evaluate();
+                        if (SimScenario.getInstance().mode == 2) {
+                            SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.getQInstance().directTrust.get(ver).get(h));
+                            SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getQInstance().getAvgIT(h));
+                            SimScenario.getInstance().getFb().setVariable("suspension", QLearn.getQInstance().suspension.get(h));
+                            SimScenario.getInstance().getFb().evaluate();
 
-                        double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
-                        ArrayList listTrust = trustMap.get(ver).get(h);
-                        listTrust.add(new Double(trust));
-                        Map<DTNHost, ArrayList<Double>> curTrust = trustMap.get(ver);
-                        curTrust.put(h, listTrust);
-                        trustMap.put(ver, curTrust);
+                            double trust = SimScenario.getInstance().getFb().getVariable("trust").getValue();
+                            ArrayList listTrust = trustMap.get(ver).get(h);
+                            listTrust.add(new Double(trust));
+                            Map<DTNHost, ArrayList<Double>> curTrust = trustMap.get(ver);
+                            curTrust.put(h, listTrust);
+                            trustMap.put(ver, curTrust);
+                        }
 
                         ArrayList listSus = suspensionMap.get(h);
                         listSus.add(new Double(QLearn.getQInstance().suspension.get(h)));
@@ -141,19 +147,22 @@ public class DirectTrustOvertime extends Report implements UpdateListener {
             write("");
         }
 
-        write("Trust Overtime");
-        for (Map.Entry<DTNHost, Map<DTNHost, ArrayList<Double>>> listHost : trustMap.entrySet()) {
-            out.print("," + listHost.getKey());
-            for (Double time : intervalTime) {
-                out.print("," + time);
-            }
-            write("");
-            for (Map.Entry<DTNHost, ArrayList<Double>> mapDT : listHost.getValue().entrySet()) {
-                out.print(mapDT.getKey());
-                for (Double DT : mapDT.getValue()) {
-                    out.print("," + DT);
+        if (SimScenario.getInstance().mode == 2) {
+            write("Trust Overtime");
+            for (Map.Entry<DTNHost, Map<DTNHost, ArrayList<Double>>> listHost : trustMap.entrySet()) {
+                out.print("," + listHost.getKey());
+                for (Double time : intervalTime) {
+                    out.print("," + time);
                 }
                 write("");
+                for (Map.Entry<DTNHost, ArrayList<Double>> mapDT : listHost.getValue().entrySet()) {
+                    out.print(mapDT.getKey());
+                    for (Double DT : mapDT.getValue()) {
+                        out.print("," + DT);
+                    }
+                    write("");
+                }
+
             }
         }
         super.done();

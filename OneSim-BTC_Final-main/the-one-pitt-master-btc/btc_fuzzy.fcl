@@ -55,30 +55,30 @@ RULEBLOCK No1
 	ACT : MIN;			// Use 'min' activation method
 	ACCU : MAX;			// Use 'max' accumulation method
 
-	RULE 1 : IF directTrust IS low AND suspension IS low AND indirectTrust IS low THEN trust IS low;
+	RULE 1 : IF directTrust IS low AND suspension IS low AND indirectTrust IS low THEN trust IS verylow;
 	RULE 2 : IF directTrust IS medium AND suspension IS low AND indirectTrust IS low THEN trust IS low; 
-	RULE 3 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS low THEN trust IS medium;
-	RULE 4 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS low THEN trust IS low;
+	RULE 3 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS low THEN trust IS veryhigh;
+	RULE 4 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS low THEN trust IS verylow;
 	RULE 5 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS low THEN trust IS low;
-	RULE 6 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS low THEN trust IS medium;
+	RULE 6 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS low THEN trust IS veryhigh;
 	RULE 7 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
 	RULE 8 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
 	RULE 9 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS low THEN trust IS verylow;
-	RULE 10 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS medium THEN trust IS low;
+	RULE 10 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS medium THEN trust IS verylow;
 	RULE 11 : IF directTrust IS medium AND suspension IS low AND  indirectTrust IS medium THEN trust IS low;
-	RULE 12 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS medium THEN trust IS high;
-	RULE 13 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS medium THEN trust IS low;
+	RULE 12 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS medium THEN trust IS veryhigh;
+	RULE 13 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS medium THEN trust IS verylow;
 	RULE 14 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS medium THEN trust IS low;
-	RULE 15 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS medium THEN trust IS high;
+	RULE 15 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS medium THEN trust IS veryhigh;
 	RULE 16 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
 	RULE 17 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
 	RULE 18 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS medium THEN trust IS verylow;
-	RULE 19 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS high THEN trust IS low;
+	RULE 19 : IF directTrust IS low AND suspension IS low AND  indirectTrust IS high THEN trust IS verylow;
 	RULE 20 : IF directTrust IS medium AND suspension IS low AND  indirectTrust IS high THEN trust IS medium;
 	RULE 21 : IF directTrust IS high AND suspension IS low AND  indirectTrust IS high THEN trust IS veryhigh;
-	RULE 22 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS high THEN trust IS low;
+	RULE 22 : IF directTrust IS low AND suspension IS medium AND  indirectTrust IS high THEN trust IS verylow;
 	RULE 23 : IF directTrust IS medium AND suspension IS medium AND  indirectTrust IS high THEN trust IS low;
-	RULE 24 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS high THEN trust IS high;
+	RULE 24 : IF directTrust IS high AND suspension IS medium AND  indirectTrust IS high THEN trust IS veryhigh;
 	RULE 25 : IF directTrust IS low AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
 	RULE 26 : IF directTrust IS medium AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
 	RULE 27 : IF directTrust IS high AND suspension IS high AND  indirectTrust IS high THEN trust IS verylow;
