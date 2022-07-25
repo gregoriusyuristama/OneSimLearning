@@ -647,10 +647,6 @@ public class DecisionEngineRouter extends ActiveRouter {
 //                    System.out.println("signature : " + this.getHost());
                 }
 
-                //Koko was here
-                Random rand = new Random();
-                DTNHost accomplice = null;
-
                 //jika misbehave maka akan mengambil data accomplice
                 if (isMisbehave(getHost())) {
                     /*
@@ -855,6 +851,10 @@ public class DecisionEngineRouter extends ActiveRouter {
 
         if (!accomplices.isEmpty()) {
             Random rand = new Random();
+            long misbeSeed = SimScenario.getInstance().misbeRng;
+            if (misbeSeed == 0) {
+                rand.setSeed(misbeSeed);
+            }
             DTNHost accomplice = accomplices.get(rand.nextInt(accomplices.size()));
 
             //mencatat trusttoken accomplice

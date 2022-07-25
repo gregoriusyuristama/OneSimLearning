@@ -93,7 +93,6 @@ public class Cloud {
                     if (signature.matches(validation)) {
 //                        System.out.println("verified : "+host);
                         verified.add(host);
-                    } else {
                     }
                 } catch (Exception ex) {
                     System.out.println(signatures.get(in));
@@ -118,6 +117,7 @@ public class Cloud {
                 trusttoken = do_RSADecryption(message, publicKeys.get(host));
             } catch (Exception ex) {
                 System.out.println(ex);
+                QLearn.updateQ(sender, verificator, false);
             }
             for (Map.Entry<Message, List<DTNHost>> entry : ack.entrySet()) {
                 Message m = entry.getKey();
@@ -164,7 +164,6 @@ public class Cloud {
 // End Qlearn
                                 case 2:
 // with Fuzzy
-                                    QLearn.updateIT(sender, verificator);
                                     SimScenario.getInstance().getFb().setVariable("directTrust", QLearn.getQInstance().directTrust.get(verificator).get(sender));
                                     SimScenario.getInstance().getFb().setVariable("indirectTrust", QLearn.getQInstance().getAvgIT(sender));
                                     SimScenario.getInstance().getFb().setVariable("suspension", QLearn.getQInstance().suspension.get(sender));
@@ -182,8 +181,12 @@ public class Cloud {
                                     if (sender == host) {
                                         verificators.add(okay);
                                     } else {
-                                        double rand = Math.random();
-                                        if (rand < 0.5) {
+                                        Random rand = new Random();
+                                        long misbeSeed = SimScenario.getInstance().misbeRng;
+                                        if (misbeSeed == 0) {
+                                            rand.setSeed(misbeSeed);
+                                        }
+                                        if (rand.nextDouble() < 0.5) {
                                             verificators.add(okay);
                                         } else {
                                             verificators.add(fail);
@@ -196,6 +199,7 @@ public class Cloud {
 
 //QLearn and Fuzzy
                         }
+                        QLearn.updateIT(sender, verificator);
                         tup.put(sender, verificators);
                         verificating.put(m, tup);
                     }

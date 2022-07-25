@@ -150,6 +150,7 @@ public class SimScenario implements Serializable {
 
     private static final String FUZZYFILE = "fuzzyfile";
     private static final String RUN_MODE = "runMode";
+    private static final String MISBEHAVES_RNG = "misbe_rng";
 
     /**
      * The world instance
@@ -233,6 +234,7 @@ public class SimScenario implements Serializable {
     private FIS fis;
     private FunctionBlock fb;
     public int mode;
+    public long misbeRng;
 
     public FunctionBlock getFb() {
         return fb;
@@ -280,6 +282,14 @@ public class SimScenario implements Serializable {
                 System.out.println("Running Default");
                 break;
         }
+
+        if (s.contains(MISBEHAVES_RNG)) {
+            misbeRng = s.getInt(MISBEHAVES_RNG);
+        } else {
+            misbeRng = 0;
+        }
+
+        System.out.println("Misbehaves RNG = " + misbeRng);
 
         ensurePositiveValue(nrofGroups, NROF_GROUPS_S);
         ensurePositiveValue(endTime, END_TIME_S);
@@ -349,8 +359,8 @@ public class SimScenario implements Serializable {
             System.err.println("Can't load file: '" + filename + "'");
             System.exit(1);
         }
-        this.fb = fis.getFunctionBlock("fuzzy_trust");
-//        JFuzzyChart.get().chart(fb);
+        this.fb = fis.getFunctionBlock(null);
+//        JFuzzyChart.get().chart(fis);
     }
 
     /**
