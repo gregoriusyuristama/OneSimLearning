@@ -73,8 +73,6 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     protected Map<DTNHost, Double> startTimestamps;
     protected Map<DTNHost, List<Duration>> connHistory;
 
-    private Map<DTNHost, Integer> frekBertemuVer;
-    private Map<DTNHost, Integer> frekBertemuTotal;
 
 //    public static Map<DTNHost, Map<DTNHost, Integer>> msgCounter;
     protected CommunityDetection community;
@@ -188,7 +186,7 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
     }
 
     public boolean shouldSendMessageToHost(Message m, DTNHost otherHost, DTNHost thisHost) {
-        DecisionEngineRouter otherDe = (DecisionEngineRouter) otherHost.getRouter();
+        DecisionEngineRouter thisDe = (DecisionEngineRouter) thisHost.getRouter();
 
         if (m.getTo() == otherHost) {
             return true; // trivial to deliver to final dest
@@ -196,10 +194,13 @@ public class DistributedBubbleRap implements RoutingDecisionEngine, CommunityDet
 
         // Just send message to Volunteer
         if (isMessenger(otherHost) || isMisbehave(otherHost)) {
-            if (!otherDe.getBlacklist().contains(otherHost)) {
+            if (!thisDe.getBlacklist().contains(otherHost)) {
                 if (!m.getHops().contains(otherHost)) {
                     return true;
                 }
+            }else{
+//                System.out.println(thisDe.getBlacklist());
+//                System.out.println(otherHost);
             }
         }
         return false;

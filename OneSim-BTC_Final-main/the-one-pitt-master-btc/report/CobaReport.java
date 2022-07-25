@@ -8,7 +8,7 @@ package report;
 import core.DTNHost;
 import core.UpdateListener;
 import java.util.List;
-import btc.Incentive;
+import btc.Cloud;
 import core.SimScenario;
 import java.util.ArrayList;
 import java.util.Map;
@@ -42,20 +42,20 @@ public class CobaReport extends Report {
             cetak += "," + h.toString();
         }
         write(cetak);
-        for (Map.Entry<DTNHost, Map<DTNHost, Double>> entryDT : QLearn.directTrust.entrySet()) {
+        for (Map.Entry<DTNHost, Map<DTNHost, Double>> entryDT : QLearn.getQInstance().directTrust.entrySet()) {
             out.print(entryDT.getKey());
             for (DTNHost h : listHost) {
-                out.print("," + QLearn.directTrust.get(entryDT.getKey()).get(h));
+                out.print("," + QLearn.getQInstance().directTrust.get(entryDT.getKey()).get(h));
             }
             write("");
         }
         write("\nIndirect Trust");
-        for (Map.Entry<DTNHost, ArrayList<Double>> entryIT : QLearn.indirectTrust.entrySet()) {
-            write(entryIT.getKey() + "," + QLearn.getAvgIT(entryIT.getKey()));
+        for (Map.Entry<DTNHost, ArrayList<Double>> entryIT : QLearn.getQInstance().indirectTrust.entrySet()) {
+            write(entryIT.getKey() + "," + QLearn.getQInstance().getAvgIT(entryIT.getKey()));
         }
 
         write("\nsuspension");
-        for (Map.Entry<DTNHost, Double> entrySus : QLearn.suspension.entrySet()) {
+        for (Map.Entry<DTNHost, Double> entrySus : QLearn.getQInstance().suspension.entrySet()) {
             write(entrySus.getKey() + "," + entrySus.getValue());
         }
         super.done();

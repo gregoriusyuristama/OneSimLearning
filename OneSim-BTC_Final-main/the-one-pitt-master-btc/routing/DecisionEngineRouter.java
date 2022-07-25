@@ -1,7 +1,7 @@
 package routing;
 
 import btc.*;
-import btc.Incentive;
+import btc.Cloud;
 import btc.Wallet;
 import java.util.*;
 
@@ -108,7 +108,7 @@ public class DecisionEngineRouter extends ActiveRouter {
     protected boolean tombstoning;
     protected RoutingDecisionEngine decider;
     protected List<Tuple<Message, Connection>> outgoingMessages;
-
+    
     protected Set<String> tombstones;
 
     //trusttoken yang dibawa oleh tiap2 node
@@ -129,7 +129,8 @@ public class DecisionEngineRouter extends ActiveRouter {
 
     protected Set<DTNHost> blacklist;
     private int misbehavingCount = 0;
-
+    
+  
     /**
      * Used to save state machine when new connections are made. See comment in
      * changedConnection()
@@ -160,7 +161,7 @@ public class DecisionEngineRouter extends ActiveRouter {
         publicKeys = new HashMap<DTNHost, PublicKey>();
         deposits = new HashMap<String, Transaction>();
         blacklist = new HashSet<DTNHost>();
-        
+
     }
 
     public DecisionEngineRouter(DecisionEngineRouter r) {
@@ -292,7 +293,7 @@ public class DecisionEngineRouter extends ActiveRouter {
 
                 if (!otherDeposits.isEmpty()) {
                     for (Map.Entry<String, Transaction> entry : otherDeposits.entrySet()) {
-                        Incentive.setDeposit(entry.getKey(), entry.getValue());
+                        Cloud.getCloudInstance().setDeposit(entry.getKey(), entry.getValue());
                     }
                     otherDeposits.clear();
                 }
@@ -304,29 +305,23 @@ public class DecisionEngineRouter extends ActiveRouter {
                 Map<DTNHost, Set<byte[]>> otherTrustToken = otherRouter.getTrustToken();
 
                 if (!otherTrustToken.isEmpty()) {
-//                    if (isMessenger(otherNode)) {
                     for (Map.Entry<DTNHost, Set<byte[]>> entry : otherTrustToken.entrySet()) {
-                        Incentive.setTrustToken(entry, otherNode, getHost(), publicKeys);
+                        Cloud.getCloudInstance().setTrustToken(entry, otherNode, getHost(), publicKeys);
                     }
                 }
 
-                //jika ack di cloud tidak kosong
-//                if (!Incentive.getAck().isEmpty()) {
-//                    //membuat incentive
-//                    Incentive.createIncentive();
-//                }
-                if (!Incentive.getVerificating().isEmpty()) {
-                    Incentive.createIncentive();
+                if (!Cloud.getCloudInstance().getVerificating().isEmpty()) {
+                    Cloud.getCloudInstance().createIncentive();
                 }
 
-                if (!Incentive.getPending().isEmpty()) {
-                    Incentive.prosesPayment();
+                if (!Cloud.getCloudInstance().getPending().isEmpty()) {
+                    Cloud.getCloudInstance().prosesPayment();
                 }
 
                 //jika ada blacklist di cloud
-                if (!Incentive.getBlacklist().isEmpty()) {
+                if (!Cloud.getCloudInstance().getBlacklist().isEmpty()) {
                     //memproses payment
-                    this.blacklist = Incentive.getBlacklist();
+                    this.blacklist = Cloud.getCloudInstance().getBlacklist();
                 }
             }
 
@@ -543,7 +538,7 @@ public class DecisionEngineRouter extends ActiveRouter {
 
         if (isFirstDelivery) {
 //            Incentive.setAck(aMessage);
-            Incentive.setAck(aMessage, this.publicKeys);
+            Cloud.getCloudInstance().setAck(aMessage, this.publicKeys);
             this.deliveredMessages.put(id, aMessage);
         }
         this.deliveredMessages.put(id, aMessage);
@@ -747,7 +742,6 @@ public class DecisionEngineRouter extends ActiveRouter {
 
     private void addSignatureToMessage(Message m, DTNHost thisHost) {
         List<byte[]> signatures = (List<byte[]>) m.getProperty("signatures");
-
         String signature = m.toString() + getHost().toString();
         byte[] result = null;
         try {
@@ -758,13 +752,8 @@ public class DecisionEngineRouter extends ActiveRouter {
                 signatures.add(result);
             }
 
-//            if(m.toString().equals("M6") || m.toString().equals("M1")){
-//            System.out.println("Enkripsi " + m + " Mulai " + getHost());
-//            System.out.println(do_RSADecryption(result, keyPair.getPublic()));
-//                System.out.println("size : " + signatures.size());
-//        }
         } catch (Exception ex) {
-
+            System.out.println(ex);
         }
 
 //        m.updateProperty("signatures", signatures);
@@ -780,7 +769,6 @@ public class DecisionEngineRouter extends ActiveRouter {
         try {
             signatures.add(do_RSAEncryption(signature, otherDe.getKeyPair().getPrivate()));
         } catch (Exception ex) {
-
         }
 
         m.updateProperty("signatures", signatures);
@@ -822,9 +810,12 @@ public class DecisionEngineRouter extends ActiveRouter {
 
         cipher.init(
                 Cipher.ENCRYPT_MODE, privateKey);
-
-        return cipher.doFinal(
+        byte[] cipherText = cipher.doFinal(
                 plainText.getBytes());
+
+      
+
+        return cipherText;
     }
 
     public String do_RSADecryption(byte[] cipherText, PublicKey publicKey) throws Exception {
@@ -877,9 +868,6 @@ public class DecisionEngineRouter extends ActiveRouter {
     }
 
     public void dontMisbehave(Message m) {
-        this.misbehavingCount = 0;
-//        this.trustToken.clear();
-//        addTrustToken(this.getHost(), m);
         this.estimatedTrust = this.estimatedTrust + 0.25 * Math.abs(1 - this.estimatedTrust);
     }
 

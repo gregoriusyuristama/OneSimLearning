@@ -6,7 +6,7 @@ package report;
 
 import btc.BlockChain;
 import static btc.BlockChain.blockchain;
-import btc.Incentive;
+import btc.Cloud;
 import btc.Transaction;
 import btc.Wallet;
 import com.google.gson.GsonBuilder;
@@ -91,6 +91,7 @@ public class ReportTarikStatic1 extends Report implements MessageListener {
         }
 
         this.msgBufferTime.add(getSimTime() - m.getReceiveTime());
+        
     }
 
     public void messageTransferAborted(Message m, DTNHost from, DTNHost to) {

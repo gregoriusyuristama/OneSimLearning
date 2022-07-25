@@ -194,6 +194,8 @@ public class ReportTarikInsentif extends Report implements MessageListener {
         for(DTNHost h : hosts){
             cetak += h + " : " + h.getWallet().getBalance() + "\n";
             cetak += "Blacklist : " + ((DecisionEngineRouter) h.getRouter()).getBlacklist() + "\n";
+            cetak += "Blacklist size : " + ((DecisionEngineRouter) h.getRouter()).getBlacklist().size() + "\n";
+            
             if(h.toString().startsWith("Mes")){
                 vol += h.getWallet().getBalance();
             }

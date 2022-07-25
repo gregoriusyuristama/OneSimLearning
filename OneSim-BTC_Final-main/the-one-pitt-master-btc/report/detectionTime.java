@@ -5,7 +5,7 @@
  */
 package report;
 
-import btc.Incentive;
+import btc.Cloud;
 import core.DTNHost;
 import java.util.ArrayList;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class detectionTime extends Report {
     @Override
     public void done() {
         write("host,detection time");
-        for (Map.Entry<DTNHost, Double> detTime : Incentive.detectionTime.entrySet()) {
+        for (Map.Entry<DTNHost, Double> detTime : Cloud.getCloudInstance().detectionTime.entrySet()) {
             write(detTime.getKey() + "," + detTime.getValue());
             listDetTime.add(detTime.getValue());
             sumDetTime += detTime.getValue();

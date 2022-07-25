@@ -5,7 +5,7 @@
  */
 package report;
 
-import btc.Incentive;
+import btc.Cloud;
 import core.DTNHost;
 import core.SimScenario;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ConfusionMatrix extends Report {
         List<DTNHost> FP = new ArrayList<DTNHost>();
         List<DTNHost> TN = new ArrayList<DTNHost>();
         List<DTNHost> FN = new ArrayList<DTNHost>();
-        Set<DTNHost> blacklist = Incentive.getBlacklist();
+        Set<DTNHost> blacklist = Cloud.getCloudInstance().getBlacklist();
         List<DTNHost> hosts = SimScenario.getInstance().getHosts();
         for (DTNHost h : hosts) {
             if (h.toString().startsWith("Mis") && blacklist.contains(h)) {

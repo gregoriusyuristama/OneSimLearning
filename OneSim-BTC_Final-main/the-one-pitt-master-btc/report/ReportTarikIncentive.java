@@ -5,7 +5,7 @@
  */
 package report;
 
-import btc.Incentive;
+import btc.Cloud;
 import btc.Wallet;
 import core.DTNHost;
 import core.Message;

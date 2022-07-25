@@ -6,6 +6,7 @@ package rLearn;
  * and open the template in the editor.
  */
 import core.DTNHost;
+import core.DTNSim;
 import core.Settings;
 import core.SimScenario;
 import java.util.ArrayList;
@@ -20,16 +21,35 @@ import java.util.Set;
  */
 public class QLearn {
 
-    public static Map<DTNHost, Map<DTNHost, Double>> directTrust = new HashMap<DTNHost, Map<DTNHost, Double>>();
-    public static Map<DTNHost, Double> suspension = new HashMap<DTNHost, Double>();
-    public static Map<DTNHost, ArrayList<Double>> indirectTrust = new HashMap<DTNHost, ArrayList<Double>>();
+    private static QLearn QInstance = null;
 
+    public static Map<DTNHost, Map<DTNHost, Double>> directTrust;
+    public static Map<DTNHost, Double> suspension;
+    public static Map<DTNHost, ArrayList<Double>> indirectTrust;
     private static final Double BSI = 43200.0; //12 jam
     private static final Double AMNESTY_FACTOR = 1800.0;
 
-    public static Map<DTNHost, Integer> updateCounter = new HashMap<DTNHost, Integer>();
+    public QLearn() {
+        directTrust = new HashMap<DTNHost, Map<DTNHost, Double>>();
+        suspension = new HashMap<DTNHost, Double>();
+        indirectTrust = new HashMap<DTNHost, ArrayList<Double>>();
 
-    public QLearn(Settings settings) {
+    }
+
+    static {
+        DTNSim.registerForReset(QLearn.class.getCanonicalName());
+        reset();
+    }
+
+    public static void reset() {
+        QInstance = null;
+    }
+
+    public static QLearn getQInstance() {
+        if (QInstance == null) {
+            QInstance = new QLearn();
+        }
+        return QInstance;
     }
 
     public static Map<DTNHost, ArrayList<Double>> getIndirectTrust() {

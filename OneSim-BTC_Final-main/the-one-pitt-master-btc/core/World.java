@@ -219,7 +219,7 @@ public class World {
                 if (this.isCancelled) {
                     break;
                 }
-                QLearn.updateSus(hosts.get(i));
+                QLearn.getQInstance().updateSus(hosts.get(i));
                 hosts.get(i).update(simulateConnections);
             }
         } else { // update order randomizing is on
@@ -231,7 +231,7 @@ public class World {
                 if (this.isCancelled) {
                     break;
                 }
-                QLearn.updateSus(hosts.get(i));
+                QLearn.getQInstance().updateSus(hosts.get(i));
                 this.updateOrder.get(i).update(simulateConnections);
             }
         }

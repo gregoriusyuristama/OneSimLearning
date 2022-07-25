@@ -15,7 +15,7 @@ import core.MessageListener;
  */
 public class MessageReport extends Report implements MessageListener {
 	public static final String HEADER =
-	    "# messages: ID, start time, end time";
+	    "# messages: ID, start time, end time, duration";
 	/** all message delays */
 	
 	/**
@@ -38,7 +38,8 @@ public class MessageReport extends Report implements MessageListener {
 		if (firstDelivery) {
 			write(m.getId() + " " 
 					+ format(m.getCreationTime()) + " "  
-					+ format(getSimTime()));
+					+ format(getSimTime())+" "
+                                        + format(getSimTime()-m.getCreationTime()));
 		} else {
 			if (to.getAddress() == m.getTo().getAddress()) {
 				write(m.getId() + " " 

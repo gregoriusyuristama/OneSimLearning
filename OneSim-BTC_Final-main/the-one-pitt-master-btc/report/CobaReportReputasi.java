@@ -9,7 +9,7 @@ package report;
  *
  * @author gregoriusyuristamanugraha
  */
-import btc.Incentive;
+import btc.Cloud;
 import core.DTNHost;
 import java.util.Map;
 

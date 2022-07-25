@@ -329,14 +329,13 @@ public class SimScenario implements Serializable {
                 if (m.toString().startsWith("Mis") || m.toString().startsWith("Mes")) {
                     Map<DTNHost, Double> initDT = new HashMap<DTNHost, Double>();
                     initDT.put(m, 0.0);
-                    if (!QLearn.directTrust.containsKey(v)) {
-                        QLearn.directTrust.put(v, initDT);
+                    if (!QLearn.getQInstance().directTrust.containsKey(v)) {
+                        QLearn.getQInstance().directTrust.put(v, initDT);
                     } else {
-                        QLearn.directTrust.get(v).put(m, 0.0);
+                        QLearn.getQInstance().directTrust.get(v).put(m, 0.0);
                     }
-                    QLearn.indirectTrust.put(m, new ArrayList());
-                    QLearn.suspension.put(m, 0.0);
-                    QLearn.updateCounter.put(m, 0);
+                    QLearn.getQInstance().indirectTrust.put(m, new ArrayList());
+                    QLearn.getQInstance().suspension.put(m, 0.0);
                 }
             }
         }
